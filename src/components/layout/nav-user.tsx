@@ -55,6 +55,7 @@ export function NavUser() {
   const { data: user } = useCurrentUser()
   const { theme, setTheme } = useTheme()
   const logout = useLogout()
+  const displayName = user?.username ?? user?.email ?? "Pengguna"
 
   function handleLogout() {
     logout.mutate(undefined, {
@@ -78,13 +79,11 @@ export function NavUser() {
           >
             <Avatar className="size-8 rounded-lg">
               <AvatarFallback className="rounded-lg text-xs">
-                {getInitials(user?.name)}
+                {getInitials(displayName)}
               </AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">
-                {user?.name ?? "Pengguna"}
-              </span>
+              <span className="truncate font-medium">{displayName}</span>
               <span className="truncate text-xs text-muted-foreground">
                 {user?.email ?? "-"}
               </span>
@@ -102,7 +101,7 @@ export function NavUser() {
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col">
                   <span className="truncate text-sm font-medium">
-                    {user?.name ?? "Pengguna"}
+                    {displayName}
                   </span>
                   <span className="truncate text-xs text-muted-foreground">
                     {user?.email ?? "-"}

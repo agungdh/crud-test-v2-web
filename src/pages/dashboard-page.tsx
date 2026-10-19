@@ -25,7 +25,8 @@ export function DashboardPage() {
   const navigate = useNavigate()
   const { data: user } = useCurrentUser()
   const logout = useLogout()
-  const firstName = user?.name.split(/\s+/).filter(Boolean)[0]
+  const displayName = user?.username ?? user?.email ?? ""
+  const firstName = displayName.split(/\s+/).filter(Boolean)[0]
 
   function handleLogout() {
     logout.mutate(undefined, {
@@ -55,14 +56,14 @@ export function DashboardPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader>
-            <CardDescription>Nama</CardDescription>
+            <CardDescription>Username</CardDescription>
             <CardAction>
               <UserIcon className="size-4 text-muted-foreground" />
             </CardAction>
           </CardHeader>
           <CardContent>
             <p className="truncate text-lg font-semibold">
-              {user?.name ?? "—"}
+              {user?.username ?? "—"}
             </p>
           </CardContent>
         </Card>

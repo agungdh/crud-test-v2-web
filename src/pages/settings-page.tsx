@@ -40,9 +40,9 @@ export function SettingsPage() {
         <CardContent className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
             <span className="text-xs font-medium text-muted-foreground">
-              Nama
+              Username / NIP
             </span>
-            <span className="text-sm font-medium">{user?.name ?? "—"}</span>
+            <span className="text-sm font-medium">{user?.username ?? "—"}</span>
           </div>
           <div className="flex flex-col gap-1.5">
             <span className="text-xs font-medium text-muted-foreground">
@@ -52,9 +52,11 @@ export function SettingsPage() {
           </div>
           <div className="flex flex-col gap-1.5">
             <span className="text-xs font-medium text-muted-foreground">
-              ID pengguna
+              UUID pengguna
             </span>
-            <span className="text-sm font-medium">{user?.id ?? "—"}</span>
+            <span className="truncate text-sm font-medium">
+              {user?.uuid ?? "—"}
+            </span>
           </div>
           <div className="flex flex-col gap-1.5">
             <span className="text-xs font-medium text-muted-foreground">

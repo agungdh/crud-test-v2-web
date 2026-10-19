@@ -1,11 +1,11 @@
 export type User = {
-  id: number
-  name: string
-  email: string
+  uuid: string
+  email: string | null
+  username: string | null
 }
 
 export type LoginCredentials = {
-  email: string
+  login: string
   password: string
 }
 

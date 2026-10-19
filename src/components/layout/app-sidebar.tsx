@@ -2,6 +2,7 @@ import {
   BoxesIcon,
   LayoutDashboardIcon,
   SettingsIcon,
+  UsersIcon,
   type LucideIcon,
 } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
@@ -29,6 +30,7 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   { title: "Beranda", href: "/", icon: LayoutDashboardIcon },
+  { title: "Pegawai", href: "/pegawai", icon: UsersIcon },
   { title: "Pengaturan", href: "/settings", icon: SettingsIcon },
 ]
 

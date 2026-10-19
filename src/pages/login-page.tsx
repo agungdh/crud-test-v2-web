@@ -32,7 +32,7 @@ function getErrorMessage(error: unknown): string {
     return "Too many login attempts. Please wait a minute and try again."
   }
 
-  return error.errors.email?.[0] ?? error.errors.password?.[0] ?? error.message
+  return error.errors.login?.[0] ?? error.errors.password?.[0] ?? error.message
 }
 
 export function LoginPage() {
@@ -40,12 +40,12 @@ export function LoginPage() {
   const location = useLocation()
   const login = useLogin()
 
-  const [email, setEmail] = useState("")
+  const [loginValue, setLoginValue] = useState("")
   const [password, setPassword] = useState("")
 
   const fieldErrors = login.error instanceof ApiError ? login.error.errors : {}
   const hasFieldErrors = Boolean(
-    fieldErrors.email?.length || fieldErrors.password?.length
+    fieldErrors.login?.length || fieldErrors.password?.length
   )
   const errorMessage =
     login.error && !hasFieldErrors ? getErrorMessage(login.error) : null
@@ -56,7 +56,7 @@ export function LoginPage() {
     const from = (location.state as LocationState | null)?.from?.pathname ?? "/"
 
     login.mutate(
-      { email, password },
+      { login: loginValue, password },
       {
         onSuccess: () => {
           navigate(from, { replace: true })
@@ -89,20 +89,20 @@ export function LoginPage() {
             ) : null}
 
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="login">Email atau NIP</Label>
               <Input
-                id="email"
-                type="email"
-                autoComplete="email"
+                id="login"
+                type="text"
+                autoComplete="username"
                 autoFocus
                 required
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                aria-invalid={Boolean(fieldErrors.email)}
+                value={loginValue}
+                onChange={(event) => setLoginValue(event.target.value)}
+                aria-invalid={Boolean(fieldErrors.login)}
               />
-              {fieldErrors.email?.[0] ? (
+              {fieldErrors.login?.[0] ? (
                 <p className="text-xs text-destructive">
-                  {fieldErrors.email[0]}
+                  {fieldErrors.login[0]}
                 </p>
               ) : null}
             </div>

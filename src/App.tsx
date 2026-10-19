@@ -5,6 +5,7 @@ import { DashboardLayout } from "@/components/layout/dashboard-layout"
 import { ProtectedRoute } from "@/components/protected-route"
 import { DashboardPage } from "@/pages/dashboard-page"
 import { LoginPage } from "@/pages/login-page"
+import { PegawaiPage } from "@/pages/pegawai-page"
 import { SettingsPage } from "@/pages/settings-page"
 
 export function App() {
@@ -17,6 +18,7 @@ export function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<DashboardLayout />}>
           <Route index element={<DashboardPage />} />
+          <Route path="pegawai" element={<PegawaiPage />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>
       </Route>

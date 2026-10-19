@@ -10,6 +10,7 @@ import {
 
 const pageTitles: Record<string, string> = {
   "/": "Beranda",
+  "/pegawai": "Pegawai",
   "/settings": "Pengaturan",
 }
 
