@@ -40,15 +40,11 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar collapsible="icon" variant="inset">
+    <Sidebar collapsible="offcanvas" variant="inset">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              size="lg"
-              className="group-data-[collapsible=icon]:!p-1.5"
-              render={<NavLink to="/" />}
-            >
+            <SidebarMenuButton size="lg" render={<NavLink to="/" />}>
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                 <BoxesIcon className="size-4" />
               </div>
