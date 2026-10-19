@@ -46,7 +46,7 @@ export function DashboardPage() {
             Ringkasan akun dan aktivitas Anda.
           </p>
         </div>
-        <Button render={<Link to="/settings" />}>
+        <Button nativeButton={false} render={<Link to="/settings" />}>
           Buka pengaturan
           <ArrowRightIcon />
         </Button>
@@ -129,6 +129,7 @@ export function DashboardPage() {
             <Button
               variant="outline"
               className="w-full justify-start"
+              nativeButton={false}
               render={<Link to="/settings" />}
             >
               <SettingsIcon />
