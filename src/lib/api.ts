@@ -42,16 +42,37 @@ async function send(
   requestHeaders.set("Accept", "application/json")
   requestHeaders.set("X-Requested-With", "XMLHttpRequest")
 
-  if (body !== undefined) {
+  let requestBody: BodyInit | undefined
+
+  if (body instanceof FormData) {
+    // Let the browser set the multipart boundary itself.
+    requestBody = body
+  } else if (body !== undefined) {
     requestHeaders.set("Content-Type", "application/json")
+    requestBody = JSON.stringify(body)
   }
 
   return fetch(`${API_URL}${path}`, {
     ...init,
     credentials: "include",
     headers: requestHeaders,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
+    body: requestBody,
   })
+}
+
+/**
+ * Send a multipart payload to a PUT endpoint.
+ *
+ * PHP does not populate uploaded files for a real PUT request, so file updates
+ * go out as POST with Laravel's `_method` override instead.
+ */
+export function withMethodOverride(
+  formData: FormData,
+  method: "PUT" | "PATCH"
+): FormData {
+  formData.set("_method", method)
+
+  return formData
 }
 
 export async function request<T>(

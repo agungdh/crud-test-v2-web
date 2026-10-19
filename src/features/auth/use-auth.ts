@@ -20,6 +20,8 @@ export function useLogin() {
     mutationFn: login,
     onSuccess: (user) => {
       queryClient.setQueryData(currentUserQueryKey, user)
+      // The login payload omits the pegawai profile; refresh it from /me.
+      void queryClient.invalidateQueries({ queryKey: currentUserQueryKey })
     },
   })
 }

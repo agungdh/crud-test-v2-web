@@ -1,6 +1,4 @@
 import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
   CircleAlertIcon,
   EyeIcon,
   PencilIcon,
@@ -10,6 +8,7 @@ import {
 } from "lucide-react"
 import { useState } from "react"
 
+import { DataPagination } from "@/components/data-pagination"
 import { DeletePegawaiDialog } from "@/components/pegawai/delete-pegawai-dialog"
 import { PegawaiDetailDialog } from "@/components/pegawai/pegawai-detail-dialog"
 import { PegawaiFormDialog } from "@/components/pegawai/pegawai-form-dialog"
@@ -247,37 +246,12 @@ export function PegawaiPage() {
             </Table>
           </div>
 
-          {meta && meta.total > 0 ? (
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-sm text-muted-foreground">
-                Menampilkan {meta.from ?? 0}–{meta.to ?? 0} dari {meta.total}{" "}
-                pegawai
-              </p>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={meta.current_page <= 1 || isFetching}
-                  onClick={() => setPage((current) => current - 1)}
-                >
-                  <ChevronLeftIcon />
-                  Sebelumnya
-                </Button>
-                <span className="text-sm text-muted-foreground">
-                  Halaman {meta.current_page} dari {meta.last_page}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={meta.current_page >= meta.last_page || isFetching}
-                  onClick={() => setPage((current) => current + 1)}
-                >
-                  Berikutnya
-                  <ChevronRightIcon />
-                </Button>
-              </div>
-            </div>
-          ) : null}
+          <DataPagination
+            meta={meta}
+            isFetching={isFetching}
+            entityLabel="pegawai"
+            onPageChange={setPage}
+          />
         </CardContent>
       </Card>
 

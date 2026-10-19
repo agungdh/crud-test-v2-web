@@ -1,7 +1,9 @@
 import {
   BoxesIcon,
+  GraduationCapIcon,
   LayoutDashboardIcon,
   SettingsIcon,
+  TagsIcon,
   UsersIcon,
   type LucideIcon,
 } from "lucide-react"
@@ -31,6 +33,8 @@ type NavItem = {
 const navItems: NavItem[] = [
   { title: "Beranda", href: "/", icon: LayoutDashboardIcon },
   { title: "Pegawai", href: "/pegawai", icon: UsersIcon },
+  { title: "Jenis Pelatihan", href: "/jenis-pelatihan", icon: TagsIcon },
+  { title: "Diklat Saya", href: "/diklat", icon: GraduationCapIcon },
   { title: "Pengaturan", href: "/settings", icon: SettingsIcon },
 ]
 

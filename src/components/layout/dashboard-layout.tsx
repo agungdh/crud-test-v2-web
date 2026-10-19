@@ -11,6 +11,8 @@ import {
 const pageTitles: Record<string, string> = {
   "/": "Beranda",
   "/pegawai": "Pegawai",
+  "/jenis-pelatihan": "Jenis Pelatihan",
+  "/diklat": "Diklat Saya",
   "/settings": "Pengaturan",
 }
 
