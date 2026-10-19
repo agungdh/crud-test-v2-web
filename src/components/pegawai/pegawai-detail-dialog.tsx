@@ -11,11 +11,7 @@ import {
 } from "@/components/ui/dialog"
 import { Spinner } from "@/components/ui/spinner"
 import { usePegawai } from "@/features/pegawai/use-pegawai"
-import {
-  formatDate,
-  formatDateTime,
-  getGenderLabel,
-} from "@/features/pegawai/utils"
+import { formatDate, getGenderLabel } from "@/features/pegawai/utils"
 import { ApiError } from "@/lib/api"
 
 type PegawaiDetailDialogProps = {
@@ -107,10 +103,6 @@ export function PegawaiDetailDialog({
               <DetailItem
                 label="Jenis kelamin"
                 value={getGenderLabel(pegawai.gender)}
-              />
-              <DetailItem
-                label="Terakhir diperbarui"
-                value={formatDateTime(pegawai.updated_at)}
               />
             </div>
           </div>

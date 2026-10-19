@@ -23,15 +23,3 @@ export function formatDate(value: string | null): string {
     year: "numeric",
   }).format(new Date(`${value.slice(0, 10)}T00:00:00`))
 }
-
-export function formatDateTime(value: string | null): string {
-  if (!value) {
-    return "—"
-  }
-
-  return new Intl.DateTimeFormat("id-ID", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: "Asia/Jakarta",
-  }).format(new Date(value))
-}

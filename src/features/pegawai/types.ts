@@ -17,8 +17,6 @@ export type Pegawai = {
   tmt: string | null
   user_uuid: string
   user?: PegawaiUser
-  created_at: string
-  updated_at: string
 }
 
 export type PaginationLink = {
