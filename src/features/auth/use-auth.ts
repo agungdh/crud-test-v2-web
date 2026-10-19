@@ -1,0 +1,36 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+
+import { fetchCurrentUser, login, logout } from "@/features/auth/api"
+
+const currentUserQueryKey = ["auth", "current-user"] as const
+
+export function useCurrentUser() {
+  return useQuery({
+    queryKey: currentUserQueryKey,
+    queryFn: fetchCurrentUser,
+    retry: false,
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
+export function useLogin() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: login,
+    onSuccess: (user) => {
+      queryClient.setQueryData(currentUserQueryKey, user)
+    },
+  })
+}
+
+export function useLogout() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: logout,
+    onSettled: () => {
+      queryClient.setQueryData(currentUserQueryKey, null)
+    },
+  })
+}
