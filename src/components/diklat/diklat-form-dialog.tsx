@@ -88,6 +88,7 @@ export function DiklatFormDialog({
 
   const error = createMutation.error ?? updateMutation.error
   const fieldErrors = error instanceof ApiError ? error.errors : {}
+  const berkasError = fieldErrors.berkas?.[0] ?? fieldErrors.berkas_path?.[0]
   const isSubmitting = createMutation.isPending || updateMutation.isPending
   const isEditing = Boolean(diklat)
   const formError =
@@ -361,12 +362,10 @@ export function DiklatFormDialog({
                 onChange={(event) =>
                   handleBerkasChange(event.target.files?.[0] ?? null)
                 }
-                aria-invalid={Boolean(fieldErrors.berkas)}
+                aria-invalid={Boolean(berkasError)}
               />
-              {fieldErrors.berkas?.[0] ? (
-                <p className="text-xs text-destructive">
-                  {fieldErrors.berkas[0]}
-                </p>
+              {berkasError ? (
+                <p className="text-xs text-destructive">{berkasError}</p>
               ) : (
                 <p className="text-xs text-muted-foreground">
                   PDF atau gambar, maksimal 10 MB.
@@ -399,10 +398,17 @@ export function DiklatFormDialog({
                       <XIcon />
                     </Button>
                   </div>
-                ) : diklat?.berkas_filename && !removeBerkas ? (
+                ) : diklat?.berkas_url && !removeBerkas ? (
                   <div className="flex items-center gap-2 rounded-lg border p-2 text-sm">
                     <FileTextIcon className="size-4 shrink-0 text-muted-foreground" />
-                    <span className="truncate">{diklat.berkas_filename}</span>
+                    <a
+                      className="truncate text-primary underline-offset-4 hover:underline"
+                      href={diklat.berkas_url}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Buka berkas pendukung
+                    </a>
                     <Button
                       type="button"
                       variant="ghost"

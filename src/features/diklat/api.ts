@@ -1,4 +1,5 @@
-import { csrfHeaders, request, withMethodOverride } from "@/lib/api"
+import { uploadBerkas } from "@/features/berkas/api"
+import { csrfHeaders, request } from "@/lib/api"
 
 import type {
   Diklat,
@@ -9,6 +10,10 @@ import type {
 
 type DiklatResponse = {
   data: Diklat
+}
+
+type DiklatBody = Omit<DiklatPayload, "berkas"> & {
+  berkas_path?: string | null
 }
 
 function buildQuery(filters: DiklatFilters): string {
@@ -30,12 +35,8 @@ function buildQuery(filters: DiklatFilters): string {
     params.set("sampai_tanggal", filters.sampai_tanggal)
   }
 
-  if (filters.page) {
-    params.set("page", String(filters.page))
-  }
-
-  if (filters.per_page) {
-    params.set("per_page", String(filters.per_page))
+  if (filters.cursor) {
+    params.set("cursor", filters.cursor)
   }
 
   const query = params.toString()
@@ -43,24 +44,28 @@ function buildQuery(filters: DiklatFilters): string {
   return query ? `?${query}` : ""
 }
 
-function toFormData(payload: DiklatPayload): FormData {
-  const formData = new FormData()
+/**
+ * Upload a new attachment when one was selected.
+ *
+ * `undefined` keeps the stored file, a `File` replaces it, and `null` removes
+ * it. The API expects the temporary `berkas_path` from the presigned upload,
+ * never a multipart file part.
+ */
+async function toRequestBody(
+  payload: DiklatPayload,
+  replacesBerkas: boolean
+): Promise<DiklatBody> {
+  const { berkas, ...fields } = payload
 
-  formData.set("jenis_pelatihan_uuid", payload.jenis_pelatihan_uuid)
-  formData.set("nomor_surat", payload.nomor_surat)
-  formData.set("materi_pengembangan", payload.materi_pengembangan)
-  formData.set("dari_tanggal_pelaksanaan", payload.dari_tanggal_pelaksanaan)
-  formData.set("sampai_tanggal_pelaksanaan", payload.sampai_tanggal_pelaksanaan)
-  formData.set("jumlah_jam_pelatihan", String(payload.jumlah_jam_pelatihan))
-
-  if (payload.berkas instanceof File) {
-    formData.set("berkas", payload.berkas)
-  } else if (payload.berkas === null) {
-    // An empty value is converted to null by the API and clears the attachment.
-    formData.set("berkas", "")
+  if (berkas instanceof File) {
+    return { ...fields, berkas_path: await uploadBerkas(berkas) }
   }
 
-  return formData
+  if (replacesBerkas && berkas === null) {
+    return { ...fields, berkas_path: null }
+  }
+
+  return fields
 }
 
 export function fetchDiklatList(
@@ -76,11 +81,12 @@ export async function fetchDiklat(uuid: string): Promise<Diklat> {
 }
 
 export async function createDiklat(payload: DiklatPayload): Promise<Diklat> {
+  const body = await toRequestBody(payload, false)
   const headers = await csrfHeaders()
 
   const response = await request<DiklatResponse>("/api/diklat", {
     method: "POST",
-    body: toFormData(payload),
+    body,
     headers,
   })
 
@@ -91,12 +97,12 @@ export async function updateDiklat(
   uuid: string,
   payload: DiklatPayload
 ): Promise<Diklat> {
+  const body = await toRequestBody(payload, true)
   const headers = await csrfHeaders()
 
   const response = await request<DiklatResponse>(`/api/diklat/${uuid}`, {
-    // Multipart uploads must travel as POST with the `_method` override.
-    method: "POST",
-    body: withMethodOverride(toFormData(payload), "PUT"),
+    method: "PUT",
+    body,
     headers,
   })
 

@@ -107,7 +107,7 @@ export function DiklatDetailDialog({
               <span className="text-xs font-medium text-muted-foreground">
                 Berkas pendukung
               </span>
-              {diklat.berkas_url && diklat.berkas_filename ? (
+              {diklat.berkas_url ? (
                 <a
                   className="flex items-center gap-2 text-sm font-medium text-primary underline-offset-4 hover:underline"
                   href={diklat.berkas_url}
@@ -115,7 +115,7 @@ export function DiklatDetailDialog({
                   rel="noreferrer"
                 >
                   <FileTextIcon className="size-4 shrink-0" />
-                  <span className="truncate">{diklat.berkas_filename}</span>
+                  <span className="truncate">Buka berkas pendukung</span>
                   <DownloadIcon className="size-4 shrink-0" />
                 </a>
               ) : (

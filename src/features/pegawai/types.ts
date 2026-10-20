@@ -19,16 +19,11 @@ export type Pegawai = {
   user?: PegawaiUser
 }
 
-export type {
-  PaginatedResponse,
-  PaginationLink,
-  PaginationMeta,
-} from "@/lib/pagination"
+export type { PaginatedResponse } from "@/lib/pagination"
 
 export type PegawaiFilters = {
   search?: string
-  page?: number
-  per_page?: number
+  cursor?: string
 }
 
 export type UpdatePegawaiPayload = {

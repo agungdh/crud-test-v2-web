@@ -31,14 +31,14 @@ import {
 } from "@/components/ui/table"
 import type { JenisPelatihan } from "@/features/jenis-pelatihan/types"
 import { useJenisPelatihanList } from "@/features/jenis-pelatihan/use-jenis-pelatihan"
+import { useCursorPagination } from "@/hooks/use-cursor-pagination"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { ApiError } from "@/lib/api"
-
-const perPage = 10
+import { CURSOR_PAGE_SIZE } from "@/lib/pagination"
 
 export function JenisPelatihanPage() {
   const [search, setSearch] = useState("")
-  const [page, setPage] = useState(1)
+  const pager = useCursorPagination()
   const debouncedSearch = useDebouncedValue(search)
 
   const [formOpen, setFormOpen] = useState(false)
@@ -50,8 +50,7 @@ export function JenisPelatihanPage() {
   const { data, error, isFetching, isPending, refetch } = useJenisPelatihanList(
     {
       search: debouncedSearch,
-      page,
-      per_page: perPage,
+      cursor: pager.cursor,
     }
   )
 
@@ -84,8 +83,8 @@ export function JenisPelatihanPage() {
   }
 
   function handleDeleted() {
-    if (rows.length === 1 && page > 1) {
-      setPage((current) => current - 1)
+    if (rows.length === 1 && pager.hasPrevious) {
+      pager.previous()
     }
   }
 
@@ -128,9 +127,9 @@ export function JenisPelatihanPage() {
         <CardHeader>
           <CardTitle>Daftar jenis pelatihan</CardTitle>
           <CardDescription>
-            {meta
-              ? `${meta.total} jenis pelatihan terdaftar.`
-              : "Memuat jumlah jenis pelatihan..."}
+            {isPending
+              ? "Memuat data jenis pelatihan..."
+              : "Data terbaru ditampilkan lebih dulu."}
           </CardDescription>
         </CardHeader>
 
@@ -143,7 +142,7 @@ export function JenisPelatihanPage() {
               value={search}
               onChange={(event) => {
                 setSearch(event.target.value)
-                setPage(1)
+                pager.reset()
               }}
               aria-label="Cari jenis pelatihan"
             />
@@ -189,7 +188,7 @@ export function JenisPelatihanPage() {
                   rows.map((jenisPelatihan, index) => (
                     <TableRow key={jenisPelatihan.uuid}>
                       <TableCell className="text-muted-foreground">
-                        {(meta?.from ?? 1) + index}
+                        {(pager.page - 1) * CURSOR_PAGE_SIZE + index + 1}
                       </TableCell>
                       <TableCell className="font-medium">
                         {jenisPelatihan.jenis_pelatihan}
@@ -227,10 +226,14 @@ export function JenisPelatihanPage() {
           </div>
 
           <DataPagination
-            meta={meta}
+            page={pager.page}
+            itemCount={rows.length}
+            hasNext={Boolean(meta?.next_cursor)}
+            hasPrevious={pager.hasPrevious}
             isFetching={isFetching}
             entityLabel="jenis pelatihan"
-            onPageChange={setPage}
+            onNext={() => pager.next(meta?.next_cursor)}
+            onPrevious={pager.previous}
           />
         </CardContent>
       </Card>

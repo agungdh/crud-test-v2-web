@@ -19,12 +19,8 @@ function buildQuery(filters: PegawaiFilters): string {
     params.set("search", filters.search.trim())
   }
 
-  if (filters.page) {
-    params.set("page", String(filters.page))
-  }
-
-  if (filters.per_page) {
-    params.set("per_page", String(filters.per_page))
+  if (filters.cursor) {
+    params.set("cursor", filters.cursor)
   }
 
   const query = params.toString()

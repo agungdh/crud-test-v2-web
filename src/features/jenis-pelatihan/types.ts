@@ -9,8 +9,7 @@ export type JenisPelatihan = {
 
 export type JenisPelatihanFilters = {
   search?: string
-  page?: number
-  per_page?: number
+  cursor?: string
 }
 
 export type JenisPelatihanPayload = {

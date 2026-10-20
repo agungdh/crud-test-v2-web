@@ -1,27 +1,18 @@
-export type PaginationLink = {
-  url: string | null
-  label: string
-  active: boolean
-}
-
+/**
+ * The API uses keyset (cursor) pagination.
+ *
+ * A list response carries only `data` and the UUID cursor of the last item on
+ * the page. There is no total count and no previous cursor, so the UI keeps
+ * the previous cursors itself while the user navigates back.
+ */
 export type PaginationMeta = {
-  current_page: number
-  from: number | null
-  last_page: number
-  links: PaginationLink[]
-  path: string
-  per_page: number
-  to: number | null
-  total: number
+  next_cursor: string | null
 }
 
 export type PaginatedResponse<T> = {
   data: T[]
-  links: {
-    first: string | null
-    last: string | null
-    prev: string | null
-    next: string | null
-  }
   meta: PaginationMeta
 }
+
+/** The API fixes the cursor page size at 20 items. */
+export const CURSOR_PAGE_SIZE = 20

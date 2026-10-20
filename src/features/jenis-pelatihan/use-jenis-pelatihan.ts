@@ -8,6 +8,7 @@ import {
 import {
   createJenisPelatihan,
   deleteJenisPelatihan,
+  fetchAllJenisPelatihan,
   fetchJenisPelatihan,
   fetchJenisPelatihanList,
   updateJenisPelatihan,
@@ -26,9 +27,6 @@ const jenisPelatihanKeys = {
   detail: (uuid: string) => [...jenisPelatihanKeys.details(), uuid] as const,
 }
 
-/** Every jenis pelatihan, used to fill the diklat form select. */
-const optionsFilters: JenisPelatihanFilters = { per_page: 100 }
-
 export function useJenisPelatihanList(filters: JenisPelatihanFilters) {
   return useQuery({
     queryKey: jenisPelatihanKeys.list(filters),
@@ -37,12 +35,12 @@ export function useJenisPelatihanList(filters: JenisPelatihanFilters) {
   })
 }
 
+/** Every jenis pelatihan, used to fill the diklat form select. */
 export function useJenisPelatihanOptions() {
   return useQuery({
-    queryKey: jenisPelatihanKeys.list(optionsFilters),
-    queryFn: () => fetchJenisPelatihanList(optionsFilters),
+    queryKey: [...jenisPelatihanKeys.lists(), "options"],
+    queryFn: fetchAllJenisPelatihan,
     staleTime: 5 * 60 * 1000,
-    select: (response) => response.data,
   })
 }
 

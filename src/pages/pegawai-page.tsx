@@ -35,14 +35,13 @@ import {
 import type { Pegawai } from "@/features/pegawai/types"
 import { usePegawaiList } from "@/features/pegawai/use-pegawai"
 import { getGenderLabel } from "@/features/pegawai/utils"
+import { useCursorPagination } from "@/hooks/use-cursor-pagination"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { ApiError } from "@/lib/api"
 
-const perPage = 10
-
 export function PegawaiPage() {
   const [search, setSearch] = useState("")
-  const [page, setPage] = useState(1)
+  const pager = useCursorPagination()
   const debouncedSearch = useDebouncedValue(search)
 
   const [formOpen, setFormOpen] = useState(false)
@@ -52,8 +51,7 @@ export function PegawaiPage() {
 
   const { data, error, isFetching, isPending, refetch } = usePegawaiList({
     search: debouncedSearch,
-    page,
-    per_page: perPage,
+    cursor: pager.cursor,
   })
 
   const rows = data?.data ?? []
@@ -85,8 +83,8 @@ export function PegawaiPage() {
   }
 
   function handleDeleted() {
-    if (rows.length === 1 && page > 1) {
-      setPage((current) => current - 1)
+    if (rows.length === 1 && pager.hasPrevious) {
+      pager.previous()
     }
   }
 
@@ -127,9 +125,9 @@ export function PegawaiPage() {
         <CardHeader>
           <CardTitle>Daftar pegawai</CardTitle>
           <CardDescription>
-            {meta
-              ? `${meta.total} pegawai terdaftar.`
-              : "Memuat jumlah pegawai..."}
+            {isPending
+              ? "Memuat data pegawai..."
+              : "Data terbaru ditampilkan lebih dulu."}
           </CardDescription>
         </CardHeader>
 
@@ -142,7 +140,7 @@ export function PegawaiPage() {
               value={search}
               onChange={(event) => {
                 setSearch(event.target.value)
-                setPage(1)
+                pager.reset()
               }}
               aria-label="Cari pegawai"
             />
@@ -247,10 +245,14 @@ export function PegawaiPage() {
           </div>
 
           <DataPagination
-            meta={meta}
+            page={pager.page}
+            itemCount={rows.length}
+            hasNext={Boolean(meta?.next_cursor)}
+            hasPrevious={pager.hasPrevious}
             isFetching={isFetching}
             entityLabel="pegawai"
-            onPageChange={setPage}
+            onNext={() => pager.next(meta?.next_cursor)}
+            onPrevious={pager.previous}
           />
         </CardContent>
       </Card>

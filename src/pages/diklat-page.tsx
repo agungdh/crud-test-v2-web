@@ -47,10 +47,10 @@ import type { Diklat } from "@/features/diklat/types"
 import { useDiklatList } from "@/features/diklat/use-diklat"
 import { formatJamPelatihan, formatPeriode } from "@/features/diklat/utils"
 import { useJenisPelatihanOptions } from "@/features/jenis-pelatihan/use-jenis-pelatihan"
+import { useCursorPagination } from "@/hooks/use-cursor-pagination"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { ApiError } from "@/lib/api"
-
-const perPage = 10
+import { CURSOR_PAGE_SIZE } from "@/lib/pagination"
 
 export function DiklatPage() {
   const { data: user } = useCurrentUser()
@@ -59,7 +59,7 @@ export function DiklatPage() {
   const [jenisPelatihanUuid, setJenisPelatihanUuid] = useState("")
   const [dariTanggal, setDariTanggal] = useState("")
   const [sampaiTanggal, setSampaiTanggal] = useState("")
-  const [page, setPage] = useState(1)
+  const pager = useCursorPagination()
   const debouncedSearch = useDebouncedValue(search)
 
   const [formOpen, setFormOpen] = useState(false)
@@ -67,6 +67,8 @@ export function DiklatPage() {
   const [detailUuid, setDetailUuid] = useState<string | null>(null)
   const [deletingDiklat, setDeletingDiklat] = useState<Diklat | null>(null)
 
+  // `undefined` means the profile is not known yet; only a loaded `null`
+  // proves that the account has no pegawai profile.
   const hasPegawai = user?.pegawai !== null
 
   const { data, error, isFetching, isPending, refetch } = useDiklatList({
@@ -74,8 +76,7 @@ export function DiklatPage() {
     jenis_pelatihan_uuid: jenisPelatihanUuid || undefined,
     dari_tanggal: dariTanggal || undefined,
     sampai_tanggal: sampaiTanggal || undefined,
-    page,
-    per_page: perPage,
+    cursor: pager.cursor,
   })
 
   const { data: jenisPelatihanOptions } = useJenisPelatihanOptions()
@@ -124,8 +125,8 @@ export function DiklatPage() {
   }
 
   function handleDeleted() {
-    if (rows.length === 1 && page > 1) {
-      setPage((current) => current - 1)
+    if (rows.length === 1 && pager.hasPrevious) {
+      pager.previous()
     }
   }
 
@@ -134,7 +135,7 @@ export function DiklatPage() {
     setJenisPelatihanUuid("")
     setDariTanggal("")
     setSampaiTanggal("")
-    setPage(1)
+    pager.reset()
   }
 
   if (!hasPegawai) {
@@ -201,9 +202,9 @@ export function DiklatPage() {
         <CardHeader>
           <CardTitle>Daftar diklat</CardTitle>
           <CardDescription>
-            {meta
-              ? `${meta.total} diklat tercatat.`
-              : "Memuat jumlah diklat..."}
+            {isPending
+              ? "Memuat data diklat..."
+              : "Data terbaru ditampilkan lebih dulu."}
           </CardDescription>
         </CardHeader>
 
@@ -217,7 +218,7 @@ export function DiklatPage() {
                 value={search}
                 onChange={(event) => {
                   setSearch(event.target.value)
-                  setPage(1)
+                  pager.reset()
                 }}
                 aria-label="Cari diklat"
               />
@@ -231,7 +232,7 @@ export function DiklatPage() {
               value={jenisPelatihanUuid || "all"}
               onValueChange={(value) => {
                 setJenisPelatihanUuid(value === "all" ? "" : (value ?? ""))
-                setPage(1)
+                pager.reset()
               }}
             >
               <SelectTrigger
@@ -263,7 +264,7 @@ export function DiklatPage() {
                 value={dariTanggal}
                 onChange={(event) => {
                   setDariTanggal(event.target.value)
-                  setPage(1)
+                  pager.reset()
                 }}
               />
             </div>
@@ -281,7 +282,7 @@ export function DiklatPage() {
                 value={sampaiTanggal}
                 onChange={(event) => {
                   setSampaiTanggal(event.target.value)
-                  setPage(1)
+                  pager.reset()
                 }}
               />
             </div>
@@ -346,7 +347,7 @@ export function DiklatPage() {
                   rows.map((diklat, index) => (
                     <TableRow key={diklat.uuid}>
                       <TableCell className="text-muted-foreground">
-                        {(meta?.from ?? 1) + index}
+                        {(pager.page - 1) * CURSOR_PAGE_SIZE + index + 1}
                       </TableCell>
                       <TableCell className="font-mono text-xs">
                         {diklat.nomor_surat}
@@ -373,7 +374,7 @@ export function DiklatPage() {
                             href={diklat.berkas_url}
                             target="_blank"
                             rel="noreferrer"
-                            title={diklat.berkas_filename ?? "Unduh berkas"}
+                            title="Unduh berkas"
                           >
                             <FileTextIcon className="size-4" />
                             Berkas
@@ -422,10 +423,14 @@ export function DiklatPage() {
           </div>
 
           <DataPagination
-            meta={meta}
+            page={pager.page}
+            itemCount={rows.length}
+            hasNext={Boolean(meta?.next_cursor)}
+            hasPrevious={pager.hasPrevious}
             isFetching={isFetching}
             entityLabel="diklat"
-            onPageChange={setPage}
+            onNext={() => pager.next(meta?.next_cursor)}
+            onPrevious={pager.previous}
           />
         </CardContent>
       </Card>

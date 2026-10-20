@@ -18,12 +18,8 @@ function buildQuery(filters: JenisPelatihanFilters): string {
     params.set("search", filters.search.trim())
   }
 
-  if (filters.page) {
-    params.set("page", String(filters.page))
-  }
-
-  if (filters.per_page) {
-    params.set("per_page", String(filters.per_page))
+  if (filters.cursor) {
+    params.set("cursor", filters.cursor)
   }
 
   const query = params.toString()
@@ -47,6 +43,26 @@ export async function fetchJenisPelatihan(
   )
 
   return response.data
+}
+
+/**
+ * Fetch every jenis pelatihan by following `meta.next_cursor`.
+ *
+ * The API fixes the page size at 20 and does not expose a total count, so the
+ * diklat form has to walk the pages to build a complete select.
+ */
+export async function fetchAllJenisPelatihan(): Promise<JenisPelatihan[]> {
+  const items: JenisPelatihan[] = []
+  let cursor: string | undefined
+
+  do {
+    const response = await fetchJenisPelatihanList({ cursor })
+
+    items.push(...response.data)
+    cursor = response.meta.next_cursor ?? undefined
+  } while (cursor)
+
+  return items
 }
 
 export async function createJenisPelatihan(

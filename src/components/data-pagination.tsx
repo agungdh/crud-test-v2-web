@@ -1,50 +1,56 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import type { PaginationMeta } from "@/lib/pagination"
 
 type DataPaginationProps = {
-  meta: PaginationMeta | undefined
+  /** 1-based page number, tracked by the caller from the cursor history. */
+  page: number
+  /** Number of rows currently rendered on this page. */
+  itemCount: number
+  hasNext: boolean
+  hasPrevious: boolean
   isFetching?: boolean
   /** Entity name shown in the summary and navigation labels, e.g. "pegawai". */
   entityLabel: string
-  onPageChange: (page: number) => void
+  onNext: () => void
+  onPrevious: () => void
 }
 
 export function DataPagination({
-  meta,
+  page,
+  itemCount,
+  hasNext,
+  hasPrevious,
   isFetching = false,
   entityLabel,
-  onPageChange,
+  onNext,
+  onPrevious,
 }: DataPaginationProps) {
-  if (!meta || meta.total === 0) {
+  if (itemCount === 0 && !hasPrevious) {
     return null
   }
 
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <p className="text-sm text-muted-foreground">
-        Menampilkan {meta.from ?? 0}–{meta.to ?? 0} dari {meta.total}{" "}
-        {entityLabel}
+        Menampilkan {itemCount} {entityLabel}
       </p>
       <div className="flex items-center gap-2">
         <Button
           variant="outline"
           size="sm"
-          disabled={meta.current_page <= 1 || isFetching}
-          onClick={() => onPageChange(meta.current_page - 1)}
+          disabled={!hasPrevious || isFetching}
+          onClick={onPrevious}
         >
           <ChevronLeftIcon />
           Sebelumnya
         </Button>
-        <span className="text-sm text-muted-foreground">
-          Halaman {meta.current_page} dari {meta.last_page}
-        </span>
+        <span className="text-sm text-muted-foreground">Halaman {page}</span>
         <Button
           variant="outline"
           size="sm"
-          disabled={meta.current_page >= meta.last_page || isFetching}
-          onClick={() => onPageChange(meta.current_page + 1)}
+          disabled={!hasNext || isFetching}
+          onClick={onNext}
         >
           Berikutnya
           <ChevronRightIcon />

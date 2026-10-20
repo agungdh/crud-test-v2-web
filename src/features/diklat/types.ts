@@ -12,7 +12,6 @@ export type Diklat = {
   dari_tanggal_pelaksanaan: string
   sampai_tanggal_pelaksanaan: string
   jumlah_jam_pelatihan: number
-  berkas_filename: string | null
   berkas_url: string | null
 }
 
@@ -21,8 +20,7 @@ export type DiklatFilters = {
   jenis_pelatihan_uuid?: string
   dari_tanggal?: string
   sampai_tanggal?: string
-  page?: number
-  per_page?: number
+  cursor?: string
 }
 
 export type DiklatPayload = {

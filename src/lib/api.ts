@@ -60,21 +60,6 @@ async function send(
   })
 }
 
-/**
- * Send a multipart payload to a PUT endpoint.
- *
- * PHP does not populate uploaded files for a real PUT request, so file updates
- * go out as POST with Laravel's `_method` override instead.
- */
-export function withMethodOverride(
-  formData: FormData,
-  method: "PUT" | "PATCH"
-): FormData {
-  formData.set("_method", method)
-
-  return formData
-}
-
 export async function request<T>(
   path: string,
   options: RequestOptions = {}
